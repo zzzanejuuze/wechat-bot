@@ -1,5 +1,5 @@
-import itchat
-from itchat.content import TEXT
+from lib import itchat
+from lib.itchat.content import TEXT
 from gpt import gpt, chat, generate_img
 
 
@@ -41,7 +41,7 @@ def group_text_reply(msg):
 
 
 # 启动微信机器人
-itchat.auto_login(hotReload=True)
+itchat.auto_login(enableCmdQR=True,hotReload=True)
 #member_lst = itchat.get_friends()
 #itchat.send_msg(msg='hi', toUserName='@b12b03e2ad3dbf97d6ad3af4deefc94d7adc3f1b82423a8dd835f47208b44763')
 
