@@ -33,7 +33,7 @@ def group_text_reply(msg):
             #generate_img(message)
             #itchat.send_image(fileDir="bot_draw_img.jpg", toUserName=msg['FromUserName'])
          
-        bot_res = gpt(message)
+        bot_res = chat(message)
         print(message)
         print(bot_res)
         itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])

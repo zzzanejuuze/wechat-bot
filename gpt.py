@@ -22,10 +22,10 @@ def gpt(PROMPT, max_tokens=500, outputs=1):
 
 
 # Chat
-def chat(message, maxtokens=50, outputs=1):
+def chat(message, maxtokens=500, outputs=1):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=message,
+        messages=[{"role": "user", "content": message}],
         max_tokens=maxtokens,
         n=outputs
     )
