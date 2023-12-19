@@ -24,19 +24,19 @@ def reply_msg(msg):
 def group_text_reply(msg):
     # 当然如果只想针对@你的人才回复，可以设置if msg['isAt']: 
     if msg['isAt']:
-        nickname = '月石魔法Moonstone Magic'
+        nickname = 'AI'
         message = msg['Text']
         message = message.split(nickname)[1]
 
-        if ['画', 'draw'] in message:
+        #if ['画', 'draw'] in message:
             # generate image from text
-            generate_img(message)
-            itchat.send_image(fileDir="bot_draw_img.jpg", toUserName=msg['FromUserName'])
-        else: 
-            bot_res = gpt(message)
-            print(message)
-            print(bot_res)
-            itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
+            #generate_img(message)
+            #itchat.send_image(fileDir="bot_draw_img.jpg", toUserName=msg['FromUserName'])
+         
+        bot_res = gpt(message)
+        print(message)
+        print(bot_res)
+        itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
 
 
 
