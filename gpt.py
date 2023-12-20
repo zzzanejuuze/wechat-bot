@@ -2,8 +2,6 @@ import openai
 import requests 
 import constants
 
-from PIL import Image 
-from io import BytesIO
 
 #os.environ["OPENAI_API_KEY"] = constants.APIKEY
 openai.api_key = constants.APIKEY
@@ -34,25 +32,20 @@ def chat(message, maxtokens=500, outputs=1):
 
 
 # Generate image
-def generate_img(text):
-    res = openai.Image.create(
-        prompt=text,
-        n=1,
-        size="256x256"
+def generate_img(PROMPT):
+    res = openai.images.generate(
+        model="dall-e-2",          # 图片生成模型，可选 dall-e-2, dall-e-3
+        prompt=PROMPT,
+        size="256x256",            # 图片大小,可选有 256x256, 512x512, 1024x1024 (dall-e-3默认为1024x1024)
+        quality="standard",
+        n = 1,
+
     )
-    url = res["data"][0]["url"]
+    url = res.data[0].url
     response = requests.get(url, stream=True)
     with open("bot_draw_img.jpg", "wb") as f:
         f.write(response.content)
 
-    #return url
-
-#text = "draw batman in red and blue color"
-#generate_img(text)
-
-#PROMPT = '帮我写一段简单的离职申请邮件，离职原因是家里有点事需要处理，离职日期是1月2号'
-#res = gpt(PROMPT, max_tokens=2000)
-#print(res)
 
 
 
