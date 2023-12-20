@@ -26,14 +26,14 @@ def group_text_reply(msg):
     if msg['isAt']:
         nickname = 'AI'
         message = msg['Text']
-        message = message.split(nickname)[1]
+        message = message.split(nickname)[1].strip()
 
         #if ['画', 'draw'] in message:
             # generate image from text
             #generate_img(message)
             #itchat.send_image(fileDir="bot_draw_img.jpg", toUserName=msg['FromUserName'])
          
-        bot_res = chat(message)
+        bot_res = chat(message, maxtokens=4000)
         print(message)
         print(bot_res)
         itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
