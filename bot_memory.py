@@ -9,7 +9,7 @@ import tiktoken
     ]
 '''
 class Bot_memory:
-    memory_list = [{"role": "system", "content": "you are a helpful assistant"},]
+    memory_list = [{"role": "system", "content": "your name is warren buffet and you are a helpful assistant"},]
     def save_memory(self, msg):
         self.memory_list.append(msg)
         num_tokens = num_tokens_from_messages(self.memory_list, model="gpt-3.5-turbo")
