@@ -18,10 +18,30 @@ def reply_msg(msg):
         generate_img(message)
         itchat.send_image(fileDir="bot_draw_img.jpg", toUserName=msg['FromUserName'])
     else:
-        bot_res = chat(message, maxtokens=4000)
-        print(message)
-        print(bot_res)
-        itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
+        user_msg = {"role": "user", "content": message}
+        Bot_memory().save_memory(user_msg)
+        message_record = Bot_memory.memory_list
+        try:
+            bot_res = chat(message_record, maxtokens=4000)
+            print(message)
+            print(bot_res)
+            bot_msg = {"role": "system", "content": bot_res}
+            Bot_memory().save_memory(bot_msg)
+            print(Bot_memory.memory_list)
+            itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
+        except Exception as e:
+            print(e)
+            Bot_memory().clear_memory()
+
+            user_msg = {"role": "user", "content": message}
+            Bot_memory().save_memory(user_msg)
+            message_record = Bot_memory.memory_list
+            bot_res = chat(message_record, maxtokens=4000)
+
+            bot_msg = {"role": "system", "content": bot_res}
+            Bot_memory().save_memory(bot_msg)
+            print(Bot_memory.memory_list)
+            itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
 
 
 # for group chat
@@ -29,7 +49,7 @@ def reply_msg(msg):
 def group_text_reply(msg):
     # 当然如果只想针对@你的人才回复，可以设置if msg['isAt']: 
     if msg['isAt']:
-        nickname = 'AI'
+        nickname = 'Warren Buffet'
         message = msg['Text']
         message = message.split(nickname)[1].strip()
         msg_prefix = message[0]
@@ -53,8 +73,16 @@ def group_text_reply(msg):
             except Exception as e:
                 print(e)
                 Bot_memory().clear_memory()
-                error_msg = "I just cleared my memory, ask me one more time!"
-                itchat.send_msg(msg=error_msg, toUserName=msg['FromUserName'])
+                user_msg = {"role": "user", "content": message}
+                Bot_memory().save_memory(user_msg)
+                message_record = Bot_memory.memory_list
+                bot_res = chat(message_record, maxtokens=4000)
+
+                bot_msg = {"role": "system", "content": bot_res}
+                Bot_memory().save_memory(bot_msg)
+                print(Bot_memory.memory_list)
+                
+                itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
 
 
 # 启动微信机器人
