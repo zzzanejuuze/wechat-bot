@@ -1,6 +1,9 @@
 import openai 
 import requests 
 import constants
+import json
+
+from tools.tools import tools, get_stock_price
 
 
 #os.environ["OPENAI_API_KEY"] = constants.APIKEY
@@ -47,6 +50,53 @@ def generate_img(PROMPT):
     response = requests.get(url, stream=True)
     with open("bot_draw_img.jpg", "wb") as f:
         f.write(response.content)
+
+
+def chat_test(messages, tools=tools, maxtokens=500, outputs=1):
+    response = openai.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        tools=tools,
+        tool_choice="auto",
+        max_tokens=maxtokens,
+        n=outputs
+    )
+    res = response.choices[0].message
+
+    tool_calls = res.tool_calls
+    if tool_calls:
+        available_functions = {
+            "get_stock_price": get_stock_price,
+        }
+        tool_message = [i for i in messages]
+        tool_message.append(res)
+
+        # Depends on questions, it may call the function multiple times
+        for tool_call in tool_calls:      
+            function_name = tool_call.function.name
+            function_to_call = available_functions[function_name]
+            function_args = json.loads(tool_call.function.arguments)
+            function_response = function_to_call(ticker=function_args.get("ticker"))
+
+            tool_message.append(
+                {
+                    "tool_call_id": tool_call.id,
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response,
+                }
+            )
+        second_res = openai.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=tool_message,
+                max_tokens=4000, 
+                n=1
+            )
+        return second_res.choices[0].message.content
+
+    else:
+        print('check')
+        return res.content
 
 
 
