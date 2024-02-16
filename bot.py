@@ -1,6 +1,6 @@
 from lib import itchat
 from lib.itchat.content import TEXT
-from gpt import chat, generate_img, chat_test
+from gpt import chat, generate_img
 from bot_memory import Bot_memory
 
 
@@ -22,9 +22,8 @@ def reply_msg(msg):
         Bot_memory().save_memory(user_msg)
         messages = Bot_memory.memory_list
         try:
-            bot_res = chat_test(messages=messages, maxtokens=3800)
+            bot_res = chat(messages=messages, maxtokens=3800)
             bot_msg = {"role": "system", "content": bot_res}
-            print(bot_msg, 'hihi2')
             Bot_memory().save_memory(bot_msg)
             itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
 
@@ -35,13 +34,11 @@ def reply_msg(msg):
             user_msg = {"role": "user", "content": message}
             Bot_memory().save_memory(user_msg)
             messages = Bot_memory.memory_list
-            bot_res = chat_test(messages=messages, maxtokens=3800)
+            bot_res = chat(messages=messages, maxtokens=3800)
 
             bot_msg = {"role": "system", "content": bot_res}
             Bot_memory().save_memory(bot_msg)
-            #print(Bot_memory.memory_list)
             itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
-        print(Bot_memory.memory_list, 'hihi1')
 
 
 # for group chat
@@ -59,29 +56,25 @@ def group_text_reply(msg):
         else:
             user_msg = {"role": "user", "content": message}
             Bot_memory().save_memory(user_msg)
-            message_record = Bot_memory.memory_list
+            messages = Bot_memory.memory_list
             try:
-                bot_res = chat(message_record, maxtokens=3097)
-                print(message)
-                print(bot_res)
+                bot_res = chat(messages=messages, maxtokens=3800)
                 bot_msg = {"role": "system", "content": bot_res}
                 Bot_memory().save_memory(bot_msg)
-                print(Bot_memory.memory_list)
-
                 itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
 
             except Exception as e:
                 print(e)
                 Bot_memory().clear_memory()
+
                 user_msg = {"role": "user", "content": message}
                 Bot_memory().save_memory(user_msg)
-                message_record = Bot_memory.memory_list
-                bot_res = chat(message_record, maxtokens=4000)
+                messages = Bot_memory.memory_list
+                bot_res = chat(messages=messages, maxtokens=3800)
 
                 bot_msg = {"role": "system", "content": bot_res}
                 Bot_memory().save_memory(bot_msg)
-                print(Bot_memory.memory_list)
-                
+                #print(Bot_memory.memory_list)
                 itchat.send_msg(msg=bot_res, toUserName=msg['FromUserName'])
 
 
