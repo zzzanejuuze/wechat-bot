@@ -3,7 +3,7 @@ import requests
 import constants
 import json
 
-from tools.tools import tools, get_stock_price
+from tools.tools import tools, get_stock_price, save_todo, query_todo
 
 
 #os.environ["OPENAI_API_KEY"] = constants.APIKEY
@@ -23,7 +23,7 @@ def gpt(PROMPT, max_tokens=500, outputs=1):
 
 
 # Chat
-def chat(message, maxtokens=500, outputs=1):
+def chat_test(message, maxtokens=500, outputs=1):
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=message,#[{"role": "user", "content": message}],
@@ -52,7 +52,7 @@ def generate_img(PROMPT):
         f.write(response.content)
 
 
-def chat_test(messages, tools=tools, maxtokens=500, outputs=1):
+def chat(messages, tools=tools, maxtokens=500, outputs=1):
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
@@ -67,6 +67,8 @@ def chat_test(messages, tools=tools, maxtokens=500, outputs=1):
     if tool_calls:
         available_functions = {
             "get_stock_price": get_stock_price,
+            "save_todo": save_todo,
+            "query_todo": query_todo
         }
         tool_message = [i for i in messages]
         tool_message.append(res)
@@ -76,7 +78,12 @@ def chat_test(messages, tools=tools, maxtokens=500, outputs=1):
             function_name = tool_call.function.name
             function_to_call = available_functions[function_name]
             function_args = json.loads(tool_call.function.arguments)
-            function_response = function_to_call(ticker=function_args.get("ticker"))
+            if function_args.get("ticker"):
+                function_response = function_to_call(ticker=function_args.get("ticker"))
+            if function_args.get("todo"):
+                function_response = function_to_call(todo=function_args.get("todo"))
+            if not function_args:
+                function_response = function_to_call()
 
             tool_message.append(
                 {
@@ -86,16 +93,17 @@ def chat_test(messages, tools=tools, maxtokens=500, outputs=1):
                     "content": function_response,
                 }
             )
+
         second_res = openai.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-3.5-turbo-16k-0613",
                 messages=tool_message,
                 max_tokens=4000, 
                 n=1
             )
+
         return second_res.choices[0].message.content
 
     else:
-        print('check')
         return res.content
 
 
